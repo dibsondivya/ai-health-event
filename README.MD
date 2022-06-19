@@ -2,6 +2,7 @@
 This application classifies user input tweets into their relevant health event groups. The [ERNIE 2.0 model](https://huggingface.co/dibsondivya/ernie-phmtweets-sutd) used for classification has been trained on data found from an [Emory University Study on Detection of Personal Health Mentions in Social Media paper](https://arxiv.org/pdf/1802.09130v2.pdf), and fine-tuned to perform with 88.5% accuracy.
 
 Tweets were labelled with 4 main classes:
+/n
 0. non-health
 1. awareness
 2. other-mention
