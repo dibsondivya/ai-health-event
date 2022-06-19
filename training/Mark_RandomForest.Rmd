@@ -1,0 +1,247 @@
+---
+title: "50.021 AI Project w CART, RF"
+date: "12 June 2022"
+author: "ESD + ISTD Trains"
+output:
+  prettydoc::html_pretty:
+    theme: cayman
+    highlight: github
+    toc: yes
+    toc_depth: 2
+---
+
+# Clear Environment + Library
+```{r, echo=TRUE,warning=FALSE,message=FALSE}
+#use this to help you clear your environment withut clearing FUNCTIONS :)
+rm(list = setdiff(ls(), lsf.str()))
+
+## week 1-6
+library(ggplot2)
+library(psych)
+library(ggfortify)
+library(dplyr)
+library(factoextra)
+library(caTools)
+library(ROCR)
+library(mlogit)
+library(leaps)
+library(glmnet)
+
+## week 8-12
+library(rpart) # CART
+library(rpart.plot) # CART plots
+library(randomForest) # Random Forest
+library(tm) # text mining; to process DTM
+library(SnowballC) # Porter’s stemming algorithm
+library(wordcloud) # Basic Visualisation with Wordcloud
+library(e1071) # Naive Bayes Classifier
+
+```
+
+# Data Preparation
+
+```{r}
+# Load Train & Test Set
+train <- read.csv("train_textcleaned.csv", stringsAsFactors=FALSE)
+test <- read.csv("test_textcleaned.csv", stringsAsFactors=FALSE)
+
+# Obtain Test Labels
+testlabel <- test$label
+
+# Extract relevant columns, insert placeholder test labels
+train <- train[c(2,3)]
+test <- test[c(2)]
+test$label <- 5
+
+# Combine the dataframes into one
+twitter <- rbind(train,test)
+
+#Take a look at proportion of tweets. Unequal proportion of sentiments. 5 means no sentiment
+table(twitter$label)
+table(testlabel)
+```
+
+# Pre-processing
+
+To create the DTM, we will use the text mining package tm. Note that this is a development package, so there could be some variations based on the system you run (e.g., different R versions or different operating systems).
+
+```{r}
+corpus <- Corpus(VectorSource(twitter$tweet))
+# corpus
+```
+
+Elements of the corpus.
+
+```{r}
+corpus[[1]]
+as.character(corpus[[1]])
+
+corpus[[4000]]
+as.character(corpus[[4000]])
+```
+
+## Convert text to lower case
+
+```{r}
+corpus <- tm_map(corpus,content_transformer(tolower))
+# corpus <- tm_map(corpus,tolower) # alternative command
+
+as.character(corpus[[1]])
+as.character(corpus[[4000]])
+```
+
+## Remove stopwords
+
+Then, we move on to the stopwords. Here is the list of english stopwords in the `tm` package
+
+```{r}
+stopwords("english") # stopwords are common words found in english
+```
+
+Let's then remove the stopwords from the corpus
+
+```{r}
+corpus <- tm_map(corpus,removeWords,stopwords("english"))
+# And ... Let's check a couple of documents
+as.character(corpus[[1]])
+as.character(corpus[[4000]])
+```
+
+## Remove punctuation
+
+```{r}
+corpus <- tm_map(corpus,removePunctuation)
+# And ... Let's check a couple of documents
+as.character(corpus[[1]])
+as.character(corpus[[4000]])
+```
+
+## Stemming
+
+Finally, we stem the words using Porter's stemming algorithm. Note that you may need to load the `SnowballC` package to use this functionality. The package is the R interface to the C libstemmer library that implements Porter's word stemming algorithm.
+
+```{r}
+corpus <- tm_map(corpus,stemDocument)
+# And ... Let's check a couple of documents
+as.character(corpus[[1]])
+as.character(corpus[[4000]])
+```
+
+Let's compare the raw information with the post-processed one:
+
+```{r}
+twitter$tweet[1]
+as.character(corpus[[1]])
+
+twitter$tweet[4536]
+as.character(corpus[[4536]])
+```
+
+## Create DTM
+
+We can now create a document-term matrix from the original corpus.
+
+```{r}
+dtm <- DocumentTermMatrix(corpus)
+dtm
+```
+
+Sparsity is close to 100%. (Most of them do not appear in the document)
+
+Let's check the first & middle document
+
+```{r}
+dtm[1,]
+inspect(dtm[1,])
+```
+
+```{r}
+inspect(dtm[4000,])
+```
+
+## Removing sparse terms
+
+An important information we can get is the frequency with which terms appear \
+We can also check the frequency of specific words
+
+```{r}
+dtm[,"bitch"]
+```
+
+```{r}
+dtm[,"fuck"]
+```
+
+In this specific case, we remove all terms with at least 99.5% empty entries
+
+```{r}
+dtm <- removeSparseTerms(dtm,0.995)
+dtm # 
+```
+
+`dtm` is now a term-document matrix with 4536 documents and 282 terms.
+
+# Preparing the DTM for model learning
+
+We transform the term-document matrix into a matrix and, then, into a dataframe
+
+```{r}
+twittersparse <- as.data.frame(as.matrix(dtm))
+# str(twittersparse)
+# colnames(twittersparse)
+```
+
+This helps ensure that columns have valid names. For example, names starting with numbers are modified (e.g., 300k -> X300k).
+
+```{r}
+colnames(twittersparse) <- make.names(colnames(twittersparse))
+# colnames(twittersparse)
+```
+
+# Train and Test a classifier
+
+```{r}
+# Split Train and Test Set
+train1 <- subset(twittersparse[1:3175,])
+test1 <- subset(twittersparse[3176:4536,])
+
+# Last step, we add the output variable (polarity of tweets) to the `twittersparse` train1 dataframe. This is something we'll need to make predictions.
+
+train1$label <- as.factor(twitter$label[1:3175])
+# table(train1$label) # double-check numbers
+```
+
+
+## CART
+
+```{r}
+model2 <- rpart(label~., data=train1)
+# summary(model2)
+# model2
+
+# Prediction, Confusion Matrix & Accuracy
+predict2 <- predict(model2,newdata=test1, type = "class")
+
+pred_table <- table(predict2,testlabel)
+pred_table
+
+accuracy <- (pred_table[1,1]+pred_table[2,2]+pred_table[3,3]+pred_table[4,4])/sum(pred_table)
+accuracy 
+```
+
+## Random Forest
+
+```{r}
+# We use the default parameters to fit the model (500 trees)
+model3 <- randomForest(label~.,data=train1, ntree=500)
+# summary(model3)
+
+# Prediction, Confusion Matrix & Accuracy
+predict3 <- predict(model3,newdata=test1, type = "class")
+
+pred_table <- table(predict3,testlabel)
+pred_table
+
+accuracy <- (pred_table[1,1]+pred_table[2,2]+pred_table[3,3]+pred_table[4,4])/sum(pred_table)
+accuracy
+```
