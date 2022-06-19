@@ -83,7 +83,7 @@ replace_emoticon("hello:)")
 replace_contraction("it isn't")
 replace_internet_slang("TGIF")
 replace_word_elongation("amazinggg")
-str_replace_all("&lt;&lt;3", "&lt;", "<")
+str_replace_all("&lt;&lt;3", "&lt;", "<") # we convert it to the symbol as the symbol is sometimes used in emoticons like the heart <3
 
 ```
 
@@ -117,7 +117,6 @@ trystr <- replace_emoticon(trystr)                      # Replace emoticon
 trystr <- replace_emoticon_new(trystr)                  # Replace emoticon (for other cases)
 trystr <- replace_contraction(trystr)                   # Replace contractions
 trystr <- replace_internet_slang(trystr)                # Replace internet slang
-trystr <- replace_misspelling(trystr)
 trystr <- replace_word_elongation(trystr)
 trystr
 ```
