@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for, session, make_response, flash
 
-from predict import convert_label, predict
+from bertpredict import convert_label
+from distilbertpredict import predict
 
 app = Flask(__name__)
 
