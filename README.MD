@@ -4,11 +4,18 @@ This application classifies user input tweets into their relevant health event g
 // add gui images
 
 ## Dependencies
-* Python 3.7 minimally
+* Python 3.7 
+* transformers
+* datasets
 
 ## Installation and Usage
-1. Install the required packages via `pip install requirements.txt`
-2. Run the application via `python3 app.py`
+```Python
+# Install the required packages
+pip install requirements.txt
+# Run the application
+python3 app.py
+```
+
 
 ## Work In Progress
 * Incorporation of working model to the backend
