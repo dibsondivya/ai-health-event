@@ -40,8 +40,8 @@ def predict(tweet):
     ## =====================================
     ## PREPARE THE DATA
     ## =====================================
-    df = pd.read_csv(TRAIN_PATH)
-    df = df.drop(['Unnamed: 0'], axis=1)
+    # df = pd.read_csv(TRAIN_PATH)
+    # df = df.drop(['Unnamed: 0'], axis=1)
 
     # train_df = pd.read_csv(TRAIN_PATH)
     # train_df = train_df.drop(['Unnamed: 0'], axis=1)
@@ -64,23 +64,23 @@ def predict(tweet):
     ## MODEL DEFINITION
     ## =====================================
     # import BERT-base pretrained model
-    bert = AutoModel.from_pretrained('bert-base-uncased')
-    model = BERT_Arch(bert)
+    # bert = AutoModel.from_pretrained('bert-base-uncased')
+    # model = BERT_Arch(bert)
 
-    model = model.to(device)
+    # model = model.to(device)
 
-    max_seq_len = 30
+    # max_seq_len = 30
 
-    train_text, temp_text, train_labels, temp_labels = train_test_split(df['tweet'], df['label'], 
-                                                                        random_state=2018, 
-                                                                        test_size=0.3, 
-                                                                        stratify=df['label'])
+    # train_text, temp_text, train_labels, temp_labels = train_test_split(df['tweet'], df['label'], 
+    #                                                                     random_state=2018, 
+    #                                                                     test_size=0.3, 
+    #                                                                     stratify=df['label'])
 
-    # we will use temp_text and temp_labels to create validation and test set
-    val_text, test_text, val_labels, test_labels = train_test_split(temp_text, temp_labels, 
-                                                                    random_state=2018, 
-                                                                    test_size=0.5, 
-                                                                    stratify=temp_labels)
+    # # we will use temp_text and temp_labels to create validation and test set
+    # val_text, test_text, val_labels, test_labels = train_test_split(temp_text, temp_labels, 
+    #                                                                 random_state=2018, 
+    #                                                                 test_size=0.5, 
+    #                                                                 stratify=temp_labels)
 
     # Load the BERT tokenizer
     # tokenizer = BertTokenizerFast.from_pretrained('bert-base-uncased')
@@ -116,10 +116,10 @@ def predict(tweet):
         # preds = preds.detach().cpu().numpy()
     
     # Tweet 
-    tweet = ["""i had a heart attack today"""]
+    # tweet = ["""i had a heart attack today"""]
 
     # Tokenize inputs
-    inputs = tokenizer(tweet, padding=True, truncation=True, return_tensors="pt").to(device) # Move the tensor to the GPU
+    inputs = tokenizer([tweet], padding=True, truncation=True, return_tensors="pt").to(device) # Move the tensor to the GPU
 
     # Inference model and get logits
     outputs = model(**inputs)
