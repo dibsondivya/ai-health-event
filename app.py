@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for, session, make_response, flash
+from distilbertpredict import predict, convert_label
 
 app = Flask(__name__)
 
@@ -12,7 +13,10 @@ def output():
     input_text = request.form['input_text']
     ## iterate through series of actions
     label = input_text
-    return jsonify({'htmlresponse' : label})
+    predicted_label = predict(label)
+    predicted_label = convert_label(predicted_label)
+    out = f'The tweet is a(n) {predicted_label.upper()}.'
+    return jsonify({'htmlresponse' : out})
 
 if __name__ == "__main__":  
     app.run(debug=True, port=2000)

@@ -1,1 +1,6 @@
 Flask
+huggingface-hub==0.8.0
+numpy==1.22.3
+tokenizers==0.11.4
+torch==1.11.0
+transformers==4.18.0
