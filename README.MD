@@ -7,7 +7,7 @@ Tweets were labelled with 4 main classes:
 * 2: other-mention
 * 3: self-mention
 
-// add gui images
+![telegram-cloud-photo-size-5-6161174884860932091-y](https://user-images.githubusercontent.com/56643379/174516239-21a67c38-bbe0-4e83-b164-ed5f7039e4bf.jpg)
 
 
 ## App Installation and Usage
