@@ -7,7 +7,8 @@ Tweets were labelled with 4 main classes:
 * 2: other-mention
 * 3: self-mention
 
-![telegram-cloud-photo-size-5-6161174884860932091-y](https://user-images.githubusercontent.com/56643379/174516239-21a67c38-bbe0-4e83-b164-ed5f7039e4bf.jpg)
+![telegram-cloud-document-5-6161174884404692339](https://user-images.githubusercontent.com/56643379/174519836-426cb6fd-9094-4f62-a2bc-b165ffc0dcc7.jpg)
+
 
 
 ## App Usage
