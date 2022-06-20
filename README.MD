@@ -10,13 +10,8 @@ Tweets were labelled with 4 main classes:
 ![telegram-cloud-photo-size-5-6161174884860932091-y](https://user-images.githubusercontent.com/56643379/174516239-21a67c38-bbe0-4e83-b164-ed5f7039e4bf.jpg)
 
 
-## App Installation and Usage
-```Python
-# Install the required packages
-pip install requirements.txt
-# Run the application
-python3 app.py
-```
+## App Usage
+The [application](https://ai-health-event.herokuapp.com) has been deployed.
 
 ## Model Development
 Model was trained on preprocessed tweet data, before finetuning and evaluation against validation and test sets. ERNIE 2.0 was found to be the best performing, reporting an accuracy of 88.5% on the test set. Note that a similarly high performing model based on [DistilBERT](https://huggingface.co/dibsondivya/distilbert-phmtweets-sutd) was also finetuned, performing with 87.7% accuracy. 
